@@ -1,12 +1,12 @@
-# SECRET : Secure Environment for automatic test grading
+# SECRET II : Secure Environment for automatic test grading, part 2
 
 > Travail de Bachelor 2020-2021
 >
-> Auteur : Caroline Monthoux
+> Auteur : Stéphane Teixeira Carvalho
 >
-> Modifié par : Stéphane Teixeira Carvalho
+> Basé sur le travail de : Caroline Monthoux
 >
-> Date : 29.07.2021
+> Date : 30.07.2021
 
 
 
@@ -17,7 +17,7 @@ Ce document est une marche à suivre pour configurer l'environnement tel que mis
 L'arborescence de dossiers est la suivante :
 
 * `Installation/` contient tous les scripts d'installation de l'environnement et des annexes qui sont cités dans ce document.
-* `Python_Scripts/` contient des scripts python permettant l'automatisation de certaines actions. Leur utilisations seront spécifiées dans les étapes où ceux-ci peuvent être utilisé.
+* `Python_Scripts/` contient des scripts python permettant l'automatisation de certaines actions. Ceux-ci sont crées dans les script d'installations mais sont également disponible dans ce dossier.
 * `Templates/` contient des fichiers servant de modèle pour les applications Zabbix et Grafana.
 
 **Ce document ainsi que les scripts qui l'accompagnent sont disponibles dans un dépôt GitHub. Vous pouvez y accéder à l'adresse https://github.com/Naludrag/SECRET-II-Installation. **

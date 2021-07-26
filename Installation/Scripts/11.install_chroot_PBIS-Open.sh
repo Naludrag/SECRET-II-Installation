@@ -1,13 +1,14 @@
 #!/bin/bash
+# Install and configure PBIS-Open on the client
+
 wget -O - http://repo.pbis.beyondtrust.com/yum/RPM-GPG-KEY-pbis | sudo apt-key add -
 sudo wget -O /etc/apt/sources.list.d/pbiso.list http://repo.pbis.beyondtrust.com/apt/pbiso.list
 ## Install pbis-open
 sudo apt-get update && sudo apt-get install pbis-open -y
 sudo apt-get install ssh -y
-## Remove avahi-daemon because it can make pbis not work
+## Remove avahi-daemon because it has problems with PBIS
 sudo apt-get remove avahi-daemon -y
 ## Creation of scripts to add machines in the AD
-
 tee /etc/ldap/connection.sh > /dev/null << 'EOF'
 #!/usr/bin/expect -f
 log_user 0
@@ -39,7 +40,7 @@ expect "tbaddvm@EINET.AD.EIVD.CH's password: "
 send "BL291+pz&A2d\r"
 log_user 1
 expect "SUCCESS\r"
-spawn /etc/ldap/finish_leave_command.sh
+exec /opt/pbis/bin/lwsm shutdown
 EOF
 
 
@@ -48,7 +49,5 @@ tee /etc/ldap/run_leave_command.sh > /dev/null << 'EOF'
 sudo domainjoin-cli leave --deleteAccount tbaddvm
 EOF
 
-tee /etc/ldap/finish_leave_command.sh > /dev/null << 'EOF'
-#!/bin/bash
-/opt/pbis/bin/lwsm shutdown
-EOF
+## Set the rights correctly on the scripts so that students cannot access it and see the password
+sudo chmod 740 /etc/ldap/*.sh

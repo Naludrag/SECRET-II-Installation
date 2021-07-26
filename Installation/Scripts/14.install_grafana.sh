@@ -1,4 +1,6 @@
 #!/bin/bash
+# Installation and configuration of Grafana
+
 ## Install Grafana
 sudo apt-get install apt-transport-https -y
 sudo apt-get install software-properties-common -y
@@ -9,7 +11,7 @@ sudo apt-get update
 sudo apt-get install grafana-enterprise -y
 ## Start grafana server
 sudo systemctl daemon-reload
-## To restart server at each reboot
+## To start the server at each boot
 sudo systemctl enable grafana-server.service
 sudo systemctl start grafana-server
 ## Install zabbix plugin

@@ -79,7 +79,7 @@ cat > /etc/sudoers.d/ltsp_roles << 'EOF'
 %EINET\\profs ALL=(ALL:ALL) ALL
 EOF
 
-# To communicate with the DNS server of the school
+# To communicate with the DNS server of the school and make LDAP connections
 sudo tee /etc/systemd/resolved.conf > /dev/null << 'EOF'
 #  This file is part of systemd.
 #
@@ -108,15 +108,17 @@ DNS=10.192.22.5
 EOF
 
 # Creation of the service that will start syslog in Ubuntu 20.04
-sudo tee /usr/bin/start-syslog.sh > /dev/null << 'EOF'
+sudo tee /usr/local/bin/start-syslog.sh > /dev/null << 'EOF'
 #!/bin/bash
 sudo systemctl unmask rsyslog
 sudo service rsyslog start
 setfacl -m u:zabbix:r /var/log/syslog
 EOF
 
-sudo chmod +x /usr/bin/start-syslog.sh
+# To make the script executable
+sudo chmod +x /usr/local/bin/start-syslog.sh
 
+# Create the service
 sudo tee /etc/systemd/system/startsyslog.service > /dev/null << 'EOF'
 [Unit]
 Description=Start syslog
@@ -129,4 +131,5 @@ ExecStart=/usr/bin/start-syslog.sh
 WantedBy=multi-user.target
 EOF
 
+# Enable it so that it is started when a client boots
 systemctl enable startsyslog.service

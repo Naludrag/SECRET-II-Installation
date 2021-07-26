@@ -1,12 +1,12 @@
-# SECRET : Secure Environment for automatic test grading
+# SECRET II : Secure Environment for automatic test grading, part 2
 
 > Travail de Bachelor 2020-2021
 >
-> Auteur : Caroline Monthoux
+> Auteur : Stéphane Teixeira Carvalho
 >
-> Modifié par : Stéphane Teixeira Carvalho
+> Basé sur le travail de : Caroline Monthoux
 >
-> Date : 29.07.2021
+> Date : 30.07.2021
 
 
 
@@ -16,11 +16,11 @@ Ce document est une marche à suivre pour configurer l'environnement tel que mis
 
 L'arborescence de dossiers est la suivante :
 
-* `Installation/` contient tous les scripts d'installation de l'environnement et des annexes qui sont cités dans ce document.
-* `Python_Scripts/` contient des scripts python permettant l'automatisation de certaines actions. Leur utilisations seront spécifiées dans les étapes où ceux-ci peuvent être utilisé.
+* `Installation/` contient tous les scripts d'installation de l'environnement et des annexes qui sont citées tout au long de ce document.
+* `Python_Scripts/` contient des scripts Python permettant l'automatisation de certaines actions. Ceux-ci sont créés dans les scripts d'installations, mais sont également disponible dans ce dossier pour avoir un accès plus aisé au code.
 * `Templates/` contient des fichiers servant de modèle pour les applications Zabbix et Grafana.
 
-**Ce document ainsi que les scripts qui l'accompagnent sont disponibles dans un dépôt GitHub. Vous pouvez y accéder à l'adresse https://github.com/Naludrag/SECRET-II-Installation. **
+**Ce document ainsi que les scripts qui l'accompagnent sont disponibles dans un dépôt GitHub. Vous pouvez y accéder à l'adresse https://github.com/Naludrag/SECRET-II-Installation.**
 
 ## Procédure d'installation de l'environnement
 
@@ -40,7 +40,7 @@ Les scripts sont conçus pour être lancés par un utilisateur sudoer depuis son
 
 #### Étape 1 : premiers paramétrages du serveur
 
-Éditer le fichier script `01.setup_server` pour remplacer les noms des interfaces et des adresses IP pour qu'elles correspondent à votre environnement. **Une balise `# *EDIT*` se trouve avant chaque option à éditer manuellement :**
+Éditer le fichier script `01.setup_server` pour remplacer les noms des interfaces et des adresses IP pour qu'elles correspondent à votre environnement. **Une balise `# *EDIT*` se trouve avant chaque option à modifier manuellement :**
 
 * Interface côté LTSP : nom et gateway
 * Interface côté réseau local : nom
@@ -51,7 +51,7 @@ Lancer le script `01.setup_server.sh`. Il installe les paquets principaux, confi
 
 * Répondre `Yes` deux fois lors de la configuration de `iptables-persistent`
 
-Attribuer un mot de passe au compte `ltsp_monitoring` qui va servir à l'enseignant à se connecter aux clients si l'authentifcation LDAP est mal configurée ou échoue.
+Attribuer un mot de passe au compte `ltsp_monitoring` qui va servir à l'enseignant à se connecter aux clients si l'authentification LDAP n'est pas configurée ou échoue.
 
 ```bash
 $ sudo passwd ltsp_monitoring
@@ -67,7 +67,7 @@ Une fois l'exécution terminée, lancer l'exécutable `mitmproxy` pour générer
 $ sudo /opt/mitmproxy/mitmproxy
 ```
 
-Attention, les certificats seront créées pour l'utilisateur lançant la commande. Dans l'exemple ci-dessus, les certificats seront crées pour l'utilisateur root.
+Attention, les certificats seront créés pour l'utilisateur lançant la commande. Dans l'exemple ci-dessus, les certificats seront créés pour l'utilisateur root.
 
 Arrêter la capture avec CTRL+C. Continuer l'installation en lançant le script `03.setup_mitmproxy`. Ce script configure Mitmproxy et installe Wireshark.
 
@@ -75,7 +75,7 @@ Arrêter la capture avec CTRL+C. Continuer l'installation en lançant le script 
 
 Lancer Wireshark, ouvrir le menu *Edit* > *Preferences* > *Protocols* > *TLS* puis ajouter le chemin `/opt/mitmproxy/sslkeylogfile.txt` dans le champs *(Pre)-Master-Secret log filename*.
 
-Parler du script python
+Après l'installation de ce script, le fichier `redirect_requests.py` sera créé dans le dossier /usr/local/bin. Ce script Python va permettre de démarrer Mitmproxy avec un fichier de configuration pour bloquer des sites web. Une explication sur son fonctionnement est fournie dans l'annexe `Annexe B - Utilisation Script Python.pdf`.
 
 #### Étape 3 : installation du chroot
 
@@ -151,7 +151,7 @@ $ schroot -c focal -u root ./07.install_chroot_zabbix.sh
 
 Il installe l'agent Zabbix dans le chroot et donne les permissions nécessaires à son fonctionnement.
 
-Une fois l'exécution terminée, exécuter cette commande :
+Une fois l'exécution terminée, lancer cette commande :
 
 ```bash
 $ schroot -c focal -u root nano /etc/zabbix/zabbix_agentd.conf
@@ -227,37 +227,35 @@ disable-user-list=true
 ```
 
 #### Étape 8 : installation de Veyon
-De retour sur le serveur, vous pouvez lancer le script `08.install.veyon`. Il va installer et configurer l'utilitaire Veyon pour permettre de surveiller les écrans des élèves à distance. Vous pouvez faire le choix d'utiliser l'authentifcation par utilisateur + mot de passe ou par clé. Le choix par défaut est par identifiants mais cela peut être modifié en décommentant et commentant les parties indiquées dans le script.
+De retour sur le serveur, vous pouvez lancer le script `08.install.veyon`. Il va installer et configurer l'utilitaire Veyon pour surveiller les écrans des élèves à distance. Vous pouvez faire le choix de mettre en place une authentification par utilisateur + mot de passe ou par clé. Le choix par défaut est celui par identifiants, mais cela peut être modifié en décommentant et commentant les parties indiquées dans le script.
 
-Ensuite, une fois l'installation terminée le script python `veyon_zabbix.py` pourra être lancé une explicationn de son fonctionnement est dipsonible dans l'annexe `Annexe B - Utilisation Script Python`. Cependant, ce script nécessite que Zabbix soit configuré est puisse détecter des machines. Il faut donc avoir effectué l'étape 13 pour pouvoir lancer le dit script.
+Ensuite, une fois l'installation terminée, le script python `veyon_zabbix.py` pourra être lancé. Une explication de son fonctionnement est disponible dans l'annexe `Annexe B - Utilisation Script Python`. Cependant, il nécessite que Zabbix soit configuré et puisse détecter des machines. Il faut donc avoir effectué l'étape 13 pour pouvoir lancer ledit script.
 
 #### Étape 9 : installation de Veyon dans le chroot
-Maintenant, veyon doit être installer sur les clients pour cela lancer la commande suivante :
+Maintenant, Veyon doit être installé sur les clients. Pour cela, lancer la commande suivante :
 ```bash
 $ schroot -c focal -u root ./09.install_chroot_veyon.sh
 ```
-Comme pour l'étape précèdente, ce script va installer et configuer veyon. Vous pouvez également commenter ou décommenter certaines lignes selon la méthode d'authentification préférée.
+Comme pour l'étape précédente, ce script va installer et configurer Veyon. Vous pouvez également commenter ou décommenter certaines lignes selon la méthode d'authentification préférée.
 
 #### Étape 10 : installation de PBIS-Open
-Cette étape va permettre d'ajouter le serveur au domaine de la HEIG-VD pour permettre aux enseignants et assistants de se connecter avec leur compte. Pour réussir cela, le script `10.install_PBIS-Open` doit être lancé. Ce script va s'occuper d'installer et configurer l'application PBIS-Open. Pour cette étape, vous aurez besoin d'un compte ayant le droit d'ajouter une machine dans une unité organisationnelle dans l'AD. Pour cela, vous pouvez contacter le service informatique qui vous fournira le compte en question.
-
-Vous pouvez rentrer les informations sur l'OU et le nom du compte dans le script aux emplacements marqués par XX. Un mot de passe sera donc demandé par le script pour vérifier l'authenticité du compte.
+Cette étape va connecter le serveur au domaine de la HEIG-VD pour permettre aux enseignants et assistants d'utiliser leur compte personnel. Pour réussir cela, le script `10.install_PBIS-Open` doit être lancé. Il va s'occuper d'installer et configurer l'application PBIS-Open. Pour mener à bien son éxécution, vous aurez besoin d'un compte ayant le droit d'ajouter une machine dans une unité organisationnelle de l'AD. Celui par défaut, qui a été utilisé pendant le développement, est tbaddvm. Cependant, il est possible que celui-ci soit désactivé et le script échouera. Pour résoudre cela, vous pouvez contacter le service informatique afin qu'il vous fournisse soit un nouveau compte soit les droits pour ajouter des machines.
 
 Il est fortement conseillé de redémarrer le serveur après l'installation. Néanmoins, cela n'est pas nécessaire pour faire fonctionner l'utilitaire.
 
 #### Étape 11 : installation de PBIS-Open dans le chroot
-Maintenant, comme pour veyon, PBIS-Open doit être installer sur les clients pour cela lancer la commande suivante :
+Maintenant, comme pour Veyon, PBIS-Open doit être installé sur les clients pour cela lancer la commande suivante :
 ```bash
 $ schroot -c focal -u root ./11.install_chroot_PBIS-Open.sh
 ```
-Ce script va installer et créer des scripts pour pouvoir ajouter et supprimer des clients du domaine. Pour plus d'explications sur l'utilité des ces scripts veuilliez vous reférrer au rapport final. Pour cette étape veuilliez contacter le service informatique pour qu'il vous fournisse un compte ayant le droit d'ajouter des machines à l'AD et remplacer les XX présent dans le fichier par les valeurs indiquées. Le mot de passe du compte sera nécessaire.
+Ce script va installer et créer des scripts pour pouvoir ajouter et supprimer des clients du domaine. Pour plus d'explications sur leur utilité, veuilliez vous référer au rapport final. Pour cette partie, il faudra modifier certaines lignes du fichier si le compte de l'étape précédente n'était pas tbaddvm. Les endroits, dans lesquels une modifcation est a effectuée, sont marqué par le mot-clé `# *EDIT*`.
 
 Une fois le script terminé, entrez dans le schroot avec la commande suivante :
 ```bash
 $ schroot -c focal -u root
 ```
 
-Une fois dans le schroot, faites les modfications suivantes dans le fichier `/lib/systemd/system/lwsmd.service` pour indiquer les scripts à exécuter au démarrage et à l'arrêt de l'application :
+Une fois dans le schroot, faites les modifications suivantes dans le fichier `/lib/systemd/system/lwsmd.service` pour indiquer les scripts à exécuter au démarrage et à l'arrêt de l'application :
 ```bash
 [Service]
 Type=forking
@@ -273,7 +271,7 @@ KillSignal=SIGCONT
 PrivateTmp=false
 ```
 
-Puis, lancer une dernière commmande qui permettra de mettre en place une authentification correcte de pam avec le LDAP.
+Puis, lancer une dernière commande qui permettra de mettre en place une authentification correcte de pam avec le LDAP.
 
 ```bash
 schroot -c focal -u root cp ./Templates_Secret/pam-files/* /etc/pam.d/
@@ -285,20 +283,20 @@ De retour sur le serveur, lancez le script `12.image.sh`. Il génère l'image, l
 
 #### Étape 13 : configuration de Zabbix Frontend & Server
 
-Suivre la procédure `Annexe A - Importation configuration Zabbix.pdf` pour terminer l'installation de Zabbix sur le serveur. Une fois la configuration terminée vous pouvez lancer le script `veyon_zabbix.py` pour pouvoir surveiller les écrans des machines clientes. Une démonstration de son lancement est disponible dans l'annexe `Annexe B - Utilisation Script Python`.
+Suivre la procédure `Annexe A - Importation configuration Zabbix.pdf` pour terminer l'installation de Zabbix sur le serveur. Une fois la configuration achevée, vous pouvez exécuter le script `veyon_zabbix.py` afin de surveiller les écrans des machines clientes. Une démonstration de son lancement est disponible dans l'annexe `Annexe B - Utilisation Script Python`.
 
 #### Étape 14 : Installation et configuration de ElasticSearch
 
-Pour installer la suite de logiciel permettant de capturer le traffic réseau il faut lancer le script `13.install_elasticsearch.sh`. Ce script va installer et configurer Elasticsearch et Logstash. Une fois le tout installer, il sera possible d'utiliser le script python `capture_trafic.py`. Ce script permet de démarrer une capture du traffic HTTP des étudiants pour pouvoir les afficher sur Grafana.
+Pour installer la suite de logiciels afin de capturer le trafic réseau il faut lancer le script `13.install_elasticsearch.sh`. Il va télécharger et configurer Elasticsearch et Logstash. Une fois le tout mis en place, il sera possible d'utiliser le script python `capture_trafic.py`. Il permet d'automatiser le lancement d'une capture.
 
-L'utilisation de ce script est démontré dans l'annexe `Annexe B - Utilisation Script Python.pdf`.
+L'utilisation de ce script est démontrée dans l'annexe `Annexe B - Utilisation Script Python.pdf`.
 
 #### Étape 15 : Installation et configuration de Grafana
 
-Dans un premier temps, lancez le script `14.install_grafana.sh`. Puis, suivez la procédure `Annexe C - Importation configuration Grafana.pdf` pour terminer l'installation de Grafana sur le serveur. Une fois la configuration terminée vous pouvez observer les différentes alertes et journaux pour surveiller les tests.
+Dans un premier temps, lancez le script `14.install_grafana.sh`. Puis, suivez la procédure `Annexe C - Importation configuration Grafana.pdf` pour terminer l'installation de Grafana sur le serveur. Une fois la configuration terminée vous pouvez observer les différents alertes et journaux pour surveiller les tests.
 
 
-#### Étape 16 : tester l'environnement
+#### Étape 16 : Tester l'environnement
 
 Dès à présent, il devrait être possible de démarrer des clients LTSP.
 
@@ -311,28 +309,29 @@ $ sudo ./mitmdump -s redirect_requests.py -w output
 $ sudo ./mitmdump -s pretty_print.py -r output
 ```
 
-Une fois un client démarré, son agent devrait s'inscrire tout seul dans les Hosts Zabbix et être monitoré. Une fois cela arrivé vous pouvez lancer le script `veyon_zabbix.py` pour avoir les clients sur Veyon également. Vous pourrez alors voir les écrans des élèves avec Veyon et les journaux sur Grafana grâce aux graphes.  
+Une fois un client démarré, son agent devrait s'inscrire tout seul dans les Hosts Zabbix et être monitoré. Une fois cela arrivé vous pouvez lancer le script `veyon_zabbix.py` pour avoir les clients sur Veyon également. Vous pourrez alors voir les écrans des élèves avec Veyon et les journaux sur Grafana grâce aux graphes.
+
+Un site web devrait également être disponible en allant à l'addresse http://localhost/.
 
 **Un compte `ltsp_monitoring` possédant les droits sudo existe expressément pour pouvoir se connecter aux clients et y effectuer des actions privilégiées.** N'hésitez pas à l'utiliser (avec ssh ou en se connectant directement sur le client).
 
 ### Configuration avec image
 
-Si vous ne désirez effectuer toute la configuration précédente une image OVF vous est fournie. Mais, pour pouvoir la rendre fonctionnelles il faudra :
-- Changer les interfaces dans les fichier yaml `/etc/netplan/02_config_ltsp.yaml` et `/etc/netplan/03_config_lan.yaml` en fonction des interfaces de votre machine. Pour voir les interfaces disponibles sur la machine vous pouvez lancer la commande `ip link show`.
-- Si cela est bien configuré, après la commande `sudo netplan apply`, vous devriez voir les deux interfaces avec des addresse IP à l'aide de la commande `ifconfig`.
+Si vous ne désirez effectuer toute la configuration précédente, une image OVF vous est fournie. Mais, pour pouvoir la rendre fonctionnelles, il faudra :
+- Changer les interfaces dans les fichiers yaml `/etc/netplan/02_config_ltsp.yaml` et `/etc/netplan/03_config_lan.yaml` en fonction de celles présentes sur la machine. Pour voir celles disponibles, vous pouvez lancer la commande `ip link show`.
+- Si cela est bien configuré, après l'éxécution de `sudo netplan apply`, vous devriez voir les deux interfaces accompagnées des adresses IP à l'aide de `ifconfig`.
 - Mettre à jour l'horloge grâce à la commande `timedatectl` pour pouvoir se synchroniser et se connecter à l'AD.
-- Vous devrez également changer les configurations firewall du chroot et du serveur pour permettre la communication entre eux. Pour cela, allez dans le fichier `/etc/iptables/rules.v4`, du serveur et du client, et modifiez la deuxième règle pour avoir l'interface qui communiquera avec les clients.
+- Vous devrez également modifier le pare-feu de l'environnement chroot et du serveur pour permettre la communication entre ceux-ci. Pour cela, allez dans le fichier `/etc/iptables/rules.v4` de chacun et changez la deuxième règle pour avoir l'interface qui communiquera avec les clients.
 
-Une fois ces changements effectués vous avez alors un serveur fonctionnel et vous pouvez y connecter des clients.
+Une fois ces changements effectués, vous avez alors un serveur fonctionnel et vous pouvez y connecter des clients.
 
 ### Troubleshooting
 
-Il est possible que certains problèmes apparaîssent malgré le suivi scrupuleux de la procédure :
+Il est possible que certains problèmes apparaissent malgré le suivi scrupuleux de la procédure :
 
 * Si les clients ne parviennent pas à obtenir une adresse IP, voir si les règles IPtables sont OK. Il suffit qu'on ait oublié de modifier le nom de l'interface dans une règle pour que cela pose problème.
 * Si les clients ne parviennent pas à se connecter au serveur TFTP, voir les logs de dnsmasq. Il suffit parfois de redémarrer le service.
 * Si une interface semble DOWN, vérifier les configurations netplan et réappliquer si nécessaire.
 * Si le serveur Zabbix apparaît "Down" dans la console, vérifier les logs dans `/var/log/zabbix/zabbix_agentd.log` et `/var/log/zabbix/zabbix_server.log`. Il peut arriver que le serveur communique avec son propre agent non pas avec l'adresse 127.0.0.1 mais avec l'adresse d'une autre interface. Si c'est le cas, il faut modifier les clés `Server` et `ServerActive` dans la configuration de l'agent pour les faire correspondre avec l'IP utilisée.
 * Si l'agent Zabbix sur les clients ne démarre pas, vérifier le owner du dossier `/var/log/zabbix`. Il arrive que ce fichier change de propriétaire sans raison apparente. Cela devrait être `zabbix:zabbix`.
-* Si les machines sur veyon indique que l'hôte n'est pas joignable vérifier qu'une instance veyon-server tourne sur le client.
-* Si les client n'arrivent pas à se connecter à l'AD vérifié qu'il est possible de pinger einet.ad.eivd.ch.
+* Si les machines sur Veyon indiquent que l'hôte n'est pas joignable, vérifier qu'une instance veyon-server tourne sur le client.`

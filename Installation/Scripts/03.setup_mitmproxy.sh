@@ -8,7 +8,23 @@ sudo cp ~/.mitmproxy/mitmproxy-ca-cert.pem /srv/ltsp/focal/usr/local/share/ca-ce
 ## Install mitmproxy certificate
 sudo update-ca-certificates
 
-## Blacklist some domains
+# Create script to ask and run mitmproxy with config file
+sudo tee /usr/local/bin/mitmproxy_configfile_start.py > /dev/null << EOF
+"""
+Script to start mitmproxy with the right configuration
+"""
+import easygui
+import os
+
+# Show the file explorer and only accept .config files
+path = easygui.fileopenbox(msg="Select the config file to use", default="~/Downloads/*.config")
+# If config file is passed run mitmproxy with the configuration
+if path is not None:
+	command = "cd /opt/mitmproxy && sudo ./mitmdump -s redirect_requests.py --set configfile=" + path
+	start_mitm = os.system(command)
+EOF
+
+## To be able to blacklist domains with config files
 sudo tee /opt/mitmproxy/redirect_requests.py > /dev/null << 'EOF'
 """
 This code redirect flows destined to blacklisted domains. Feel free to add more !
@@ -50,21 +66,10 @@ class ConfigFile:
                 raise exceptions.OptionsError("Problem with config file given")
 
     def request(self, flow):
-        if self.choice == "black":
-           # Fail with 403
-           for domain in self.sites:
-               print(domain)
-               if flow.request.pretty_host.endswith(domain):
-                   flow.response = http.HTTPResponse.make(403, b"<h2>You are not allowed here :)</h2>")
-        elif self.choice == "white":
-           # Fail with 403
-           for url in self.sites:
-            print(re.search(url, flow.request.url))
-            print(flow.request.pretty_host.endswith(url))
-            if re.search(url, flow.request.url) is None :
-               ctx.log.info(f"found match for {flow.request.url}")
-               flow.response = http.HTTPResponse.make(404)
-
+	   # Fail with 403
+	   for domain in self.sites:
+		   if flow.request.pretty_host.endswith(domain):
+			   flow.response = http.HTTPResponse.make(403, b"<h2>You are not allowed here :)</h2>")
 
 addons = [
     ConfigFile()
@@ -252,7 +257,7 @@ addons = [Addon(lambda: File('output.pcap'))]
 #addons = [Addon(lambda: Pipe('weer -'))]
 EOF
 
-## Setup wireshark. Replace the user account `secretsecure` with the wanted one.
+## Setup wireshark
 sudo touch /opt/mitmproxy/sslkeylogfile.txt
 export SSLKEYLOGFILE="/opt/mitmproxy/sslkeylogfile.txt"
 sudo tee -a /etc/environment > /dev/null << 'EOF'
@@ -267,4 +272,4 @@ sudo apt install wireshark -y
 # Open Wireshark then go to Edit > Preferences > Protocols > TLS
 # Set (Pre)-Master-Secret log filename = /opt/mitmproxy/sslkeylogfile.txt
 
-# Then run mitmdump -w /opt/mitmproxy/output-file -s /opt/mitmproxy/redirect_requests.py to start recording, and open the right interface on wireshark to see the traffic
+# Then run mitmdump -w /opt/mitmproxy/output-file -s /opt/mitmproxy/redirect_requests.py to start recording, and then use the python script to start capturing

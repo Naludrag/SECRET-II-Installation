@@ -45,16 +45,24 @@ sudo ltsp dnsmasq --proxy-dhcp=0
 
 # *EDIT*
 # Apply iptables rules. Replace `-o interface` (ens38) in the first rule with wanted interface (the one facing ltsp clients)
-# Port 5432 is for postgresql, 10051 for zabbix
 sudo iptables -A OUTPUT -p tcp -d 127.0.0.1 -j ACCEPT
 sudo iptables -A OUTPUT -s 192.168.67.1 -o ens34 -j ACCEPT
 sudo iptables -A OUTPUT -d 192.168.67.1 -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport 22 -s 192.168.67.1 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-sudo iptables -A OUTPUT -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-sudo iptables -A OUTPUT -p tcp --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 88 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p udp --dport 88 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 389 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p udp --dport 389 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 445 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 1433 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 3268 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport 10051 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 11100 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
 sudo iptables -P OUTPUT DROP
 
@@ -105,7 +113,7 @@ sudo groupadd student
 sudo useradd --create-home --shell /bin/bash --groups professor ltsp_monitoring
 
 
-# Grant professors sudo permissions
+# Grant professors sudo permissions. Grant permission for local professor and LDAP too
 sudo tee /etc/sudoers.d/ltsp_roles > /dev/null << 'EOF'
 %professor   ALL=(ALL:ALL) ALL
 %EINET\\profs ALL=(ALL:ALL) ALL

@@ -1,13 +1,16 @@
 #!/bin/bash
+# Install and configure Logstash and Elasticsearch
+
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 sudo apt-get install apt-transport-https -y
 echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+
 # Install elastic
 sudo apt-get update && sudo apt-get install elasticsearch -y
 # Install logsatsh
 sudo apt-get update && sudo apt-get install logstash -y
 
-# Config logstash dans le fichier /etc/logsatsh/conf.d
+# The configurations of Logstash are stored in the /etc/logsatsh/conf.d folder
 sudo tee /etc/logstash/conf.d/tshark.conf > /dev/null << 'EOF'
 input {
   tcp {
