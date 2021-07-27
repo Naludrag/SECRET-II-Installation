@@ -16,5 +16,13 @@ sudo systemctl enable grafana-server.service
 sudo systemctl start grafana-server
 ## Install zabbix plugin
 sudo grafana-cli plugins install alexanderzobnin-zabbix-app
-service grafana-server restart
-# You will then find grafana on port 3000 and login admin admin
+sudo service grafana-server restart
+## You will then find grafana on port 3000 and login admin admin
+
+## Install the website from the github
+cd /var/www/html 
+sudo wget https://github.com/Naludrag/SECRET_II/archive/main.zip
+sudo unzip -d /var/www/html /var/www/html/main.zip
+sudo rm -rf /var/www/html/main.zip
+sudo mv /var/www/html/SECRET_II-main/* /var/www/html/
+sudo rm -rf /var/www/html/SECRET_II-main

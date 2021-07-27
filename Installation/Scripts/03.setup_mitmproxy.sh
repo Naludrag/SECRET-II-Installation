@@ -24,25 +24,30 @@ if path is not None:
 	start_mitm = os.system(command)
 EOF
 
+## Install pip and some libraires to use the script
+sudo apt install python3-pip
+sudo pip install easygui
+sudo apt install python3-tk -y
+
 ## To be able to blacklist domains with config files
 sudo tee /opt/mitmproxy/redirect_requests.py > /dev/null << 'EOF'
 """
 This code redirect flows destined to blacklisted domains. Feel free to add more !
 """
 import typing
-import re
 
 from mitmproxy import http
 from mitmproxy import exceptions
 from mitmproxy import ctx
 
+
 class ConfigFile:
     def load(self, loader):
         loader.add_option(
-            name = "configfile",
-            typespec = typing.Optional[str],
-            default = None,
-            help = "Add config file for websites blocking",
+            name="configfile",
+            typespec=typing.Optional[str],
+            default=None,
+            help="Add config file for websites blocking",
         )
 
     def parseFile(self):
@@ -52,13 +57,12 @@ class ConfigFile:
         for line in f.readlines():
             line = line.strip()
             if line == "white" or line == "black":
-               self.choice = line
+                self.choice = line
             else:
-               self.sites.append(line)
+                self.sites.append(line)
         print("Sites being blocked :", self.sites)
         print("Policy              :", self.choice)
         return True
-
 
     def configure(self, updates):
         if "configfile" in updates:
@@ -66,10 +70,11 @@ class ConfigFile:
                 raise exceptions.OptionsError("Problem with config file given")
 
     def request(self, flow):
-	   # Fail with 403
-	   for domain in self.sites:
-		   if flow.request.pretty_host.endswith(domain):
-			   flow.response = http.HTTPResponse.make(403, b"<h2>You are not allowed here :)</h2>")
+        # Fail with 403
+        for domain in self.sites:
+            if flow.request.pretty_host.endswith(domain):
+                flow.response = http.HTTPResponse.make(403, b"<h2>You are not allowed here :)</h2>")
+
 
 addons = [
     ConfigFile()

@@ -8,6 +8,7 @@ sudo apt-get update && sudo apt-get install pbis-open -y
 sudo apt-get install ssh -y
 ## Remove avahi-daemon because it has problems with PBIS
 sudo apt-get remove avahi-daemon -y
+sudo apt autoremove
 ## Creation of scripts to add machines in the AD
 tee /etc/ldap/connection.sh > /dev/null << 'EOF'
 #!/usr/bin/expect -f

@@ -1,4 +1,4 @@
-# SECRET II : Secure Environment for automatic test grading, part 2
+# SECRET II : Secure Environment for automatic test grading, part 2 - Installation
 
 > Travail de Bachelor 2020-2021
 >
@@ -67,7 +67,7 @@ Une fois l'exécution terminée, lancer l'exécutable `mitmproxy` pour générer
 $ sudo /opt/mitmproxy/mitmproxy
 ```
 
-Attention, les certificats seront créés pour l'utilisateur lançant la commande. Dans l'exemple ci-dessus, les certificats seront créés pour l'utilisateur root.
+Attention, les certificats seront créés pour l'utilisateur lançant la commande. Dans l'exemple ci-dessus, les certificats seront créés pour l'utilisateur root. Dès lors, le script `03.setup_mitmproxy` devra être lancé avec les droits sudo pour que les certificats s'installent correctement.
 
 Arrêter la capture avec CTRL+C. Continuer l'installation en lançant le script `03.setup_mitmproxy`. Ce script configure Mitmproxy et installe Wireshark.
 
@@ -252,10 +252,10 @@ Ce script va installer et créer des scripts pour pouvoir ajouter et supprimer d
 
 Une fois le script terminé, entrez dans le schroot avec la commande suivante :
 ```bash
-$ schroot -c focal -u root
+$ schroot -c focal -u root nano /lib/systemd/system/lwsmd.service
 ```
 
-Une fois dans le schroot, faites les modifications suivantes dans le fichier `/lib/systemd/system/lwsmd.service` pour indiquer les scripts à exécuter au démarrage et à l'arrêt de l'application :
+Et effectuer les modifications suivantes dans le fichier `/lib/systemd/system/lwsmd.service` pour indiquer les scripts à exécuter au démarrage et à l'arrêt de l'application :
 ```bash
 [Service]
 Type=forking
@@ -274,7 +274,7 @@ PrivateTmp=false
 Puis, lancer une dernière commande qui permettra de mettre en place une authentification correcte de pam avec le LDAP.
 
 ```bash
-schroot -c focal -u root cp ./Templates_Secret/pam-files/* /etc/pam.d/
+schroot -c focal -u root cp ../../Templates_Secret/pam-files/* /etc/pam.d/
 ```
 
 #### Étape 12 : création de l'image cliente LTSP
