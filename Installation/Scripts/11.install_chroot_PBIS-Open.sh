@@ -1,14 +1,46 @@
 #!/bin/bash
 # Install and configure PBIS-Open on the client
 
+# To communicate with the DNS server of the school and make LDAP connections
+sudo tee /etc/systemd/resolved.conf > /dev/null << 'EOF'
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+#
+# Entries in this file show the compile time defaults.
+# You can change settings by editing this file.
+# Defaults can be restored by simply deleting this file.
+#
+# See resolved.conf(5) for details
+
+[Resolve]
+DNS=10.192.22.5
+#FallbackDNS=
+#Domains=
+#LLMNR=no
+#MulticastDNS=no
+#DNSSEC=no
+#DNSOverTLS=no
+#Cache=no-negative
+#DNSStubListener=yes
+#ReadEtcHosts=yes
+EOF
+
+#Install PBIS Open
 wget -O - http://repo.pbis.beyondtrust.com/yum/RPM-GPG-KEY-pbis | sudo apt-key add -
 sudo wget -O /etc/apt/sources.list.d/pbiso.list http://repo.pbis.beyondtrust.com/apt/pbiso.list
 ## Install pbis-open
 sudo apt-get update && sudo apt-get install pbis-open -y
-sudo apt-get install ssh -y
 ## Remove avahi-daemon because it has problems with PBIS
 sudo apt-get remove avahi-daemon -y
-sudo apt autoremove
+sudo apt autoremove -y
+sudo tee /etc/sudoers.d/ltsp_roles > /dev/null << 'EOF'
+%professor   ALL=(ALL:ALL) ALL
+%profs       ALL=(ALL:ALL) ALL
+EOF
 ## Creation of scripts to add machines in the AD
 tee /etc/ldap/connection.sh > /dev/null << 'EOF'
 #!/usr/bin/expect -f

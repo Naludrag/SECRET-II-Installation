@@ -8,6 +8,10 @@ sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)
 # Import the repository signing key:
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
+sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null << 'EOF'
+deb [arch=amd64] http://apt.postgresql.org/pub/repos/apt focal-pgdg main
+EOF
+
 # Install PostgreSQL :
 sudo apt update
 sudo apt install postgresql -y
@@ -20,6 +24,13 @@ sudo apt install apache2 php libapache2-mod-php php-xml php-gd php-bcmath php-mb
 wget https://repo.zabbix.com/zabbix/5.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.0-1+focal_all.deb
 sudo dpkg -i zabbix-release_5.0-1+focal_all.deb
 rm zabbix-release_5.0-1+focal_all.deb
+
+# To force usage of 64 bits packages
+sudo tee /etc/apt/sources.list.d/zabbix.list > /dev/null << 'EOF'
+deb [arch=amd64] http://repo.zabbix.com/zabbix/5.0/ubuntu focal main
+deb-src [arch=amd64] http://repo.zabbix.com/zabbix/5.0/ubuntu focal main
+EOF
+
 sudo apt update
 
 # Install Zabbix server, frontend, agent
@@ -56,14 +67,5 @@ sudo chmod o+x /usr/lib/zabbix/externalscripts/dconf_update.sh
 sudo tee /etc/sudoers.d/zabbix > /dev/null << 'EOF'
 zabbix  ALL=(ALL:ALL) NOPASSWD: /usr/bin/find
 zabbix  ALL=(ALL:ALL) NOPASSWD: /usr/bin/dconf
-EOF
-# To force usage of 64 bits packages
-sudo tee /etc/apt/sources.list.d/zabbix.list > /dev/null << 'EOF'
-deb [arch=amd64] http://repo.zabbix.com/zabbix/5.0/ubuntu focal main
-deb-src [arch=amd64] http://repo.zabbix.com/zabbix/5.0/ubuntu focal main
-EOF
-
-sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null << 'EOF'
-deb [arch=amd64] http://apt.postgresql.org/pub/repos/apt focal-pgdg main
 EOF
 

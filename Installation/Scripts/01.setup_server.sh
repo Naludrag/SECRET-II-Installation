@@ -116,7 +116,6 @@ sudo useradd --create-home --shell /bin/bash --groups professor ltsp_monitoring
 # Grant professors sudo permissions. Grant permission for local professor and LDAP too
 sudo tee /etc/sudoers.d/ltsp_roles > /dev/null << 'EOF'
 %professor   ALL=(ALL:ALL) ALL
-%EINET\\profs ALL=(ALL:ALL) ALL
 EOF
 
 # Generate students skeleton
@@ -130,7 +129,7 @@ sudo install -m 0660 -g sudo /usr/share/ltsp/common/ltsp/ltsp.conf /etc/ltsp/lts
 
 # Disallow students to ssh into the server
 sudo tee -a /etc/ssh/sshd_config > /dev/null << 'EOF'
-Match Group *,!sudo,!root,!professor,!assistant, !EINET\\profs
+Match Group *,!sudo,!root,!professor,!assistant
     ChrootDirectory /home
     ForceCommand internal-sftp -d %u
 Match all

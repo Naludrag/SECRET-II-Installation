@@ -25,7 +25,7 @@ if path is not None:
 EOF
 
 ## Install pip and some libraires to use the script
-sudo apt install python3-pip
+sudo apt install python3-pip -y
 sudo pip install easygui
 sudo apt install python3-tk -y
 

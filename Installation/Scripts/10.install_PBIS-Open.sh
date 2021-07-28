@@ -6,10 +6,9 @@ sudo wget -O - http://repo.pbis.beyondtrust.com/yum/RPM-GPG-KEY-pbis | sudo apt-
 sudo wget -O /etc/apt/sources.list.d/pbiso.list http://repo.pbis.beyondtrust.com/apt/pbiso.list
 ## Install pbis-open
 sudo apt-get update && sudo apt-get install pbis-open -y
-sudo apt-get install ssh -y
 ## Remove avahi-daemon because it has problems with PBIS
 sudo apt-get remove avahi-daemon -y
-sudo apt autoremove
+sudo apt autoremove -y
 ## Will add the server to the AD will ask for password of the user entered
 ## You will have to possess an account that has permisson to add machines to be able to run this command
 ## If the account tbaddvm is no longer available please contact the IT department
@@ -19,4 +18,9 @@ sudo /opt/pbis/bin/config LoginShellTemplate /bin/bash
 sudo /opt/pbis/bin/config AssumeDefaultDomain true
 sudo /opt/pbis/bin/config UserDomainPrefix einet
 sudo /opt/pbis/bin/config HomeDirTemplate %H/%D/%U
+
+sudo tee /etc/sudoers.d/ltsp_roles > /dev/null << 'EOF'
+%professor   ALL=(ALL:ALL) ALL
+%profs       ALL=(ALL:ALL) ALL
+EOF
 ## Pleae restart the server to complete the installation

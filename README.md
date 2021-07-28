@@ -67,7 +67,7 @@ Une fois l'exécution terminée, lancer l'exécutable `mitmproxy` pour générer
 $ sudo /opt/mitmproxy/mitmproxy
 ```
 
-Attention, les certificats seront créés pour l'utilisateur lançant la commande. Dans l'exemple ci-dessus, les certificats seront créés pour l'utilisateur root. Dès lors, le script `03.setup_mitmproxy` devra être lancé avec les droits sudo pour que les certificats s'installent correctement.
+Attention, les certificats seront créés pour l'utilisateur lançant la commande. Dans l'exemple ci-dessus, les certificats seront créés pour l'utilisateur root. Dès lors, le script `03.setup_mitmproxy` devra être lancé avec le mot-clé sudo pour que les certificats s'installent correctement.
 
 Arrêter la capture avec CTRL+C. Continuer l'installation en lançant le script `03.setup_mitmproxy`. Ce script configure Mitmproxy et installe Wireshark.
 
@@ -285,18 +285,26 @@ De retour sur le serveur, lancez le script `12.image.sh`. Il génère l'image, l
 
 Suivre la procédure `Annexe A - Importation configuration Zabbix.pdf` pour terminer l'installation de Zabbix sur le serveur. Une fois la configuration achevée, vous pouvez exécuter le script `veyon_zabbix.py` afin de surveiller les écrans des machines clientes. Une démonstration de son lancement est disponible dans l'annexe `Annexe B - Utilisation Script Python`.
 
-#### Étape 14 : Installation et configuration de ElasticSearch
+#### Étape 14 : installation et configuration de ElasticSearch
 
 Pour installer la suite de logiciels afin de capturer le trafic réseau il faut lancer le script `13.install_elasticsearch.sh`. Il va télécharger et configurer Elasticsearch et Logstash. Une fois le tout mis en place, il sera possible d'utiliser le script python `capture_trafic.py`. Il permet d'automatiser le lancement d'une capture.
 
 L'utilisation de ce script est démontrée dans l'annexe `Annexe B - Utilisation Script Python.pdf`.
 
-#### Étape 15 : Installation et configuration de Grafana
+#### Étape 15 : installation et configuration de Grafana
 
-Dans un premier temps, lancez le script `14.install_grafana.sh`. Puis, suivez la procédure `Annexe C - Importation configuration Grafana.pdf` pour terminer l'installation de Grafana sur le serveur. Une fois la configuration terminée vous pouvez observer les différents alertes et journaux pour surveiller les tests.
+Dans un premier temps, lancer le script `14.install_grafana.sh`. Puis, suivez la procédure `Annexe C - Importation configuration Grafana.pdf` pour terminer l'installation de Grafana sur le serveur. Une fois la configuration terminée vous pouvez observer les différents alertes et journaux pour surveiller les tests.
+
+#### Étape 15 : mise en place du dossier tests
+
+Pour terminer l'installation, lancer le dernier script se nommant `15.install_tests_script.sh`. Il s'occupera de créer et installer les scripts pour mettre en place le dossier `tests` des élèves.
+
+```bash
+schroot -c focal -u root ./15.install_tests_script.sh
+```
 
 
-#### Étape 16 : Tester l'environnement
+#### Étape 16 : tester l'environnement
 
 Dès à présent, il devrait être possible de démarrer des clients LTSP.
 
@@ -312,18 +320,27 @@ $ sudo ./mitmdump -s pretty_print.py -r output
 Une fois un client démarré, son agent devrait s'inscrire tout seul dans les Hosts Zabbix et être monitoré. Une fois cela arrivé vous pouvez lancer le script `veyon_zabbix.py` pour avoir les clients sur Veyon également. Vous pourrez alors voir les écrans des élèves avec Veyon et les journaux sur Grafana grâce aux graphes.
 
 Un site web devrait également être disponible en allant à l'addresse http://localhost/.
+Pour plus d'information sur celui-ci, veuilliez vous référer au dépôt https://github.com/Naludrag/SECRET-II-Site.
 
 **Un compte `ltsp_monitoring` possédant les droits sudo existe expressément pour pouvoir se connecter aux clients et y effectuer des actions privilégiées.** N'hésitez pas à l'utiliser (avec ssh ou en se connectant directement sur le client).
 
 ### Configuration avec image
 
-Si vous ne désirez effectuer toute la configuration précédente, une image OVF vous est fournie. Mais, pour pouvoir la rendre fonctionnelles, il faudra :
+Si vous ne désirez effectuer toute la configuration précédente, une image OVF vous est fournie. Elle est téléchargeable avec le lien suivant :
+
+
+Toutefois, pour pouvoir la rendre fonctionnelle, il faudra :
 - Changer les interfaces dans les fichiers yaml `/etc/netplan/02_config_ltsp.yaml` et `/etc/netplan/03_config_lan.yaml` en fonction de celles présentes sur la machine. Pour voir celles disponibles, vous pouvez lancer la commande `ip link show`.
 - Si cela est bien configuré, après l'éxécution de `sudo netplan apply`, vous devriez voir les deux interfaces accompagnées des adresses IP à l'aide de `ifconfig`.
 - Mettre à jour l'horloge grâce à la commande `timedatectl` pour pouvoir se synchroniser et se connecter à l'AD.
 - Vous devrez également modifier le pare-feu de l'environnement chroot et du serveur pour permettre la communication entre ceux-ci. Pour cela, allez dans le fichier `/etc/iptables/rules.v4` de chacun et changez la deuxième règle pour avoir l'interface qui communiquera avec les clients.
 
-Une fois ces changements effectués, vous avez alors un serveur fonctionnel et vous pouvez y connecter des clients.
+Une fois ces changements effectués, vous avez alors un serveur fonctionnel et vous pouvez y connecter des clients. Vous pourrez alors vous connecter avec votre compte HEIG-VD ou avec les comptes locaux : **adminsecret** avec le mot de passe **admin** ou **ltsp_monitoring** avec le mot de passe **admin** également.
+
+Si vous désirez changer leur mot de passe veuilliez entrer la commande suivante :
+```bash
+$ sudo passwd compte
+```
 
 ### Troubleshooting
 
@@ -334,4 +351,5 @@ Il est possible que certains problèmes apparaissent malgré le suivi scrupuleux
 * Si une interface semble DOWN, vérifier les configurations netplan et réappliquer si nécessaire.
 * Si le serveur Zabbix apparaît "Down" dans la console, vérifier les logs dans `/var/log/zabbix/zabbix_agentd.log` et `/var/log/zabbix/zabbix_server.log`. Il peut arriver que le serveur communique avec son propre agent non pas avec l'adresse 127.0.0.1 mais avec l'adresse d'une autre interface. Si c'est le cas, il faut modifier les clés `Server` et `ServerActive` dans la configuration de l'agent pour les faire correspondre avec l'IP utilisée.
 * Si l'agent Zabbix sur les clients ne démarre pas, vérifier le owner du dossier `/var/log/zabbix`. Il arrive que ce fichier change de propriétaire sans raison apparente. Cela devrait être `zabbix:zabbix`.
+* Lors de l'initialisation de Zabbix, il est possible qu'une erreur intervienne lors de la dernière étape. POur résoudre cela suivez simplement les indications données et le message devrait disparaître.
 * Si les machines sur Veyon indiquent que l'hôte n'est pas joignable, vérifier qu'une instance veyon-server tourne sur le client.`

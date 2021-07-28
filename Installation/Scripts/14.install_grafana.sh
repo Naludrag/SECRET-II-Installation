@@ -21,8 +21,10 @@ sudo service grafana-server restart
 
 ## Install the website from the github
 cd /var/www/html 
-sudo wget https://github.com/Naludrag/SECRET_II/archive/main.zip
+sudo wget https://github.com/Naludrag/SECRET-II-Site/archive/main.zip
 sudo unzip -d /var/www/html /var/www/html/main.zip
 sudo rm -rf /var/www/html/main.zip
-sudo mv /var/www/html/SECRET_II-main/* /var/www/html/
-sudo rm -rf /var/www/html/SECRET_II-main
+sudo mv /var/www/html/SECRET-II-Site-main/* /var/www/html/
+sudo rm -rf /var/www/html/SECRET-II-Site-main
+## Install module php-zip to create zip
+sudo apt-get install php-zip -y
