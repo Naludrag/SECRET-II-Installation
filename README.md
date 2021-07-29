@@ -20,6 +20,8 @@ L'arborescence de dossiers est la suivante :
 * `Python_Scripts/` contient des scripts Python permettant l'automatisation de certaines actions. Ceux-ci sont créés lors de l'installation, mais ils sont également disponibles dans ce dossier pour avoir un accès plus aisé au code.
 * `Templates_Secret/` contient des fichiers servant de modèle pour les applications Zabbix, Grafana et pam.
 
+**Ce document ainsi que les scripts qui l'accompagnent sont disponibles dans un dépôt GitHub. Vous pouvez y accéder à l'adresse https://github.com/Naludrag/SECRET-II-Installation.**
+
 ## Procédure d'installation de l'environnement
 
 Avant de commencer, il est nécessaire de disposer d'au moins 2 ordinateurs, l'un faisant office de serveur et l'autre de client. Il est assumé que :
@@ -323,7 +325,7 @@ Créer, ensuite, un fichier de configuration en allant sur la page web http://lo
 $ python3 /usr/local/bin/mitmproxy_configfile_start.py
 ```
 
-Une fois celui-ci exécuté, le script `capture_trafic.py` pourra être démarré pour avoir un suivi du trafic réseau.
+Une fois celui-ci exécuté, le script `capture_trafic.py` pourra être démarré pour avoir un suivi du trafic réseau. Une attention particulière doit être apportée à l'interface indiquée dans le script, car si celle-ci est erronée, la capture ne fonctionnera pas correctement.
 ```bash
 $ sudo python3 /usr/local/bin/capture_trafic.py
 ```
@@ -337,15 +339,16 @@ Pour plus d'information sur celui-ci, veuilliez vous référer au dépôt https:
 
 ### Configuration avec image
 
-Si vous ne désirez effectuer toute la configuration précédente, une image OVF vous est fournie. Elle est téléchargeable avec le lien suivant :
+Si vous ne désirez effectuer toute la configuration précédente, une image OVF vous est fournie. Elle est téléchargeable avec le lien suivant https://drive.switch.ch/index.php/s/RGG4zw5Tp0udirB
 
 
 Toutefois, pour pouvoir la rendre fonctionnelle, il faudra :
+- Selectionner les bons adapteurs réseaux pour la machine. Un donnant sur le LAN et un autre sur le réseau des clients.
 - Changer les interfaces dans les fichiers yaml `/etc/netplan/02_config_ltsp.yaml` et `/etc/netplan/03_config_lan.yaml` en fonction de celles présentes sur la machine. Pour voir celles disponibles, vous pouvez lancer la commande `ip link show`.
 - Si cela est bien configuré, après l'exécution de `sudo netplan apply`, vous devriez voir les deux interfaces accompagnées des adresses IP à l'aide de `ifconfig`.
 - Mettre à jour l'horloge grâce à la commande `timedatectl` pour pouvoir se synchroniser et se connecter à l'AD.
 - Vous devrez également modifier le pare-feu de l'environnement chroot et du serveur pour permettre la communication entre ceux-ci. Pour cela, allez dans le fichier `/etc/iptables/rules.v4` de chacun et changez la deuxième règle pour avoir l'interface qui sera du côtée avec les clients.
-- Finalement, redémarrez le serveur pour prendre en compte les changements.
+- Finalement, redémarrez le serveur pour qu'il prenne en compte les changements.
 
 Une fois ces étapes effectuées, vous avez alors un serveur fonctionnel et vous pouvez y ajouter des clients. Vous pourrez vous connecter avec votre compte HEIG-VD ou avec les comptes locaux : **adminsecret** avec le mot de passe **admin** ou **ltsp_monitoring** avec le mot de passe **admin** également.
 

@@ -44,6 +44,9 @@ sudo tee /etc/sudoers.d/ltsp_roles > /dev/null << 'EOF'
 %profs       ALL=(ALL:ALL) ALL
 EOF
 ## Creation of scripts to add machines in the AD
+# *EDIT*
+# third line starts with the username until the @. Change it if the user tbaddvm is not used
+# fourth line change the password with the password of the new account
 tee /etc/ldap/connection.sh > /dev/null << 'EOF'
 #!/usr/bin/expect -f
 log_user 0
@@ -54,6 +57,8 @@ log_user 1
 expect "SUCCESS\r"
 EOF
 
+# *EDIT*
+# In the last command change the username if you do not use tbaddvm
 tee /etc/ldap/run_command.sh > /dev/null << 'EOF'
 #!/bin/bash
 /opt/pbis/sbin/lwsmd --start-as-daemon
@@ -68,6 +73,9 @@ sudo /opt/pbis/bin/domainjoin-cli join --ou TB-STUD einet.ad.eivd.ch tbaddvm
 EOF
 
 ## Creation of script to delete machines in the AD
+# *EDIT*
+# third line starts with the username until the @. Change it if the user tbaddvm is not used
+# fourth line change the password with the password of the new account
 tee /etc/ldap/leave.sh > /dev/null << 'EOF'
 #!/usr/bin/expect -f
 log_user 0

@@ -15,7 +15,7 @@ password = "zabbix"
 zapi = ZabbixAPI(url=url, user=username, password=password)
 
 # Get the hosts known by Veyon
-hosts = subprocess.Popen("sudo veyon-cli networkobjects list | grep \"Computer\" | awk '{print $2 $5}'",
+hosts = subprocess.Popen("sudo veyon-cli networkobjects list | grep \"Computer\" | awk '{print \$2 \$5}'",
                          stdout=subprocess.PIPE, shell=True)
 # Get the result of the command
 hosts, err = hosts.communicate()
@@ -39,10 +39,10 @@ for h in zapi.hostinterface.get(output=["dns", "ip", "useip"], selectHosts=["hos
     for h2 in hostsIp:
         # If the host to add is already in Veyon (IP and name) or
         # that the machine to add is localhost we will not add it
-        if (str(h2[0], 'utf-8') == h['hosts'][0]['host'] and h2[1] == h['ip']) or h['ip'] == "127.0.0.1":
+        if (str(h2[0], 'utf-8') == h['hosts'][0]['host'] and str(h2[1], 'utf-8') == h['ip']) or h['ip'] == "127.0.0.1":
             adding = False
         # Will remove a machine that as a new IP to add it again with new IP
-        if h2[1] != h['ip'] and str(h2[0], 'utf-8') == h['hosts'][0]['host']:
+        if str(h2[1], 'utf-8') != h['ip'] and str(h2[0], 'utf-8') == h['hosts'][0]['host']:
             print("Removing {} because his IP changed will be added again").format(h['hosts'][0]['host'])
             commande = "sudo veyon-cli networkobjects remove {}".format(h['hosts'][0]['host'])
             print(os.system(commande))
