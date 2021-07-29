@@ -60,9 +60,9 @@ sudo /opt/pbis/bin/config LoginShellTemplate /bin/bash
 sudo /opt/pbis/bin/config AssumeDefaultDomain true
 sudo /opt/pbis/bin/config UserDomainPrefix einet
 sudo /opt/pbis/bin/config HomeDirTemplate %H/%D/%U
-sudo /opt/pbis/bin/config RemoteDirTemplate "%H/%U"
+sudo /opt/pbis/bin/config SkeletonDirs "/etc/skelStudents"
 
-sudo /opt/pbis/bin/domainjoin-cli join --trustEnumerationWaitSeconds 60 --ou TB-STUD einet.ad.eivd.ch tbaddvm
+sudo /opt/pbis/bin/domainjoin-cli join --ou TB-STUD einet.ad.eivd.ch tbaddvm
 EOF
 
 tee /etc/ldap/leave.sh > /dev/null << 'EOF'
@@ -83,4 +83,4 @@ sudo domainjoin-cli leave --deleteAccount tbaddvm
 EOF
 
 ## Set the rights correctly on the scripts so that students cannot access it and see the password
-sudo chmod 740 /etc/ldap/*.sh
+sudo chmod 750 /etc/ldap/*.sh

@@ -91,19 +91,9 @@ Il entre dans le chroot, télécharge les paquets nécessaires au client, instal
 * Répondre `Yes` deux fois lors de la configuration de `iptables-persistent`
 * Ne pas installer GRUB lors de l'installation de `ubuntu-desktop`
 
-#### Étape 4 : installation de Logkeys dans le chroot
+#### Étape 4 : installation du serveur, agent et frontend Zabbix
 
-Lancer le script 05 avec la commande :
-
-```bash
-$ schroot -c focal -u root ./05.install_logkeys.sh
-```
-
-Il installe le keylogger Logkeys dans le chroot et le configure.
-
-#### Étape 5 : installation du serveur, agent et frontend Zabbix
-
-Lancer le script `06.install_zabbix`. Il installe les composants nécessaires à Zabbix sur le serveur, dont la base de données PostgreSQL et Apache.
+Lancer le script `05.install_zabbix`. Il installe les composants nécessaires à Zabbix sur le serveur, dont la base de données PostgreSQL et Apache.
 
 * Un mot de passe pour la base de données est demandé pendant l'installation, le garder précieusement
 
@@ -141,12 +131,12 @@ $ sudo systemctl start zabbix-server zabbix-agent apache2
 
 4. **Redémarrer le serveur** pour terminer l'installation de Zabbix
 
-#### Étape 6 : installation de l'agent Zabbix dans le chroot
+#### Étape 5 : installation de l'agent Zabbix dans le chroot
 
-Lancer le script 07 avec la commande :
+Lancer le script 06 avec la commande :
 
 ```bash
-$ schroot -c focal -u root ./07.install_chroot_zabbix.sh
+$ schroot -c focal -u root ./06.install_chroot_zabbix.sh
 ```
 
 Il installe l'agent Zabbix dans le chroot et donne les permissions nécessaires à son fonctionnement.
@@ -165,9 +155,9 @@ ServerActive=192.168.67.1
 HostnameItem=system.hostname
 ```
 
-#### Étape 7 : configurations manuelles
+#### Étape 6 : configurations manuelles
 
-##### 7.1 Sur le serveur :
+##### 6.1 Sur le serveur :
 
 * Éditer le fichier `/etc/ltsp/ltsp.conf` et ajouter les lignes suivantes **sous les balises correspondantes** :
 
@@ -203,7 +193,7 @@ PWMERGE_SUR="ltsp_monitoring"
 disable-user-list=true
 ```
 
-##### 7.2 Dans le chroot :
+##### 6.2 Dans le chroot :
 
 Entrer dans le schroot avec la commande :
 
@@ -226,27 +216,27 @@ XKBVARIANT="fr"
 disable-user-list=true
 ```
 
-#### Étape 8 : installation de Veyon
-De retour sur le serveur, vous pouvez lancer le script `08.install.veyon`. Il va installer et configurer l'utilitaire Veyon pour surveiller les écrans des élèves à distance. Vous pouvez faire le choix de mettre en place une authentification par utilisateur + mot de passe ou par clé. Le choix par défaut est celui par identifiants, mais cela peut être modifié en décommentant et commentant les parties indiquées dans le script.
+#### Étape 7 : installation de Veyon
+De retour sur le serveur, vous pouvez lancer le script `07.install.veyon`. Il va installer et configurer l'utilitaire Veyon pour surveiller les écrans des élèves à distance. Vous pouvez faire le choix de mettre en place une authentification par utilisateur + mot de passe ou par clé. Le choix par défaut est celui par identifiants, mais cela peut être modifié en décommentant et commentant les parties indiquées dans le script.
 
 Ensuite, une fois l'installation terminée, le script python `veyon_zabbix.py` pourra être lancé. Une explication de son fonctionnement est disponible dans l'annexe `Annexe B - Utilisation Script Python`. Cependant, il nécessite que Zabbix soit configuré et puisse détecter des machines. Il faut donc avoir effectué l'étape 13 pour pouvoir lancer ledit script.
 
-#### Étape 9 : installation de Veyon dans le chroot
+#### Étape 8 : installation de Veyon dans le chroot
 Maintenant, Veyon doit être installé sur les clients. Pour cela, lancer la commande suivante :
 ```bash
-$ schroot -c focal -u root ./09.install_chroot_veyon.sh
+$ schroot -c focal -u root ./08.install_chroot_veyon.sh
 ```
 Comme pour l'étape précédente, ce script va installer et configurer Veyon. Vous pouvez également commenter ou décommenter certaines lignes selon la méthode d'authentification préférée.
 
-#### Étape 10 : installation de PBIS-Open
-Cette étape va connecter le serveur au domaine de la HEIG-VD pour permettre aux enseignants et assistants d'utiliser leur compte personnel. Pour réussir cela, le script `10.install_PBIS-Open` doit être lancé. Il va s'occuper d'installer et configurer l'application PBIS-Open. Pour mener à bien son éxécution, vous aurez besoin d'un compte ayant le droit d'ajouter une machine dans une unité organisationnelle de l'AD. Celui par défaut, qui a été utilisé pendant le développement, est tbaddvm. Cependant, il est possible que celui-ci soit désactivé et le script échouera. Pour résoudre cela, vous pouvez contacter le service informatique afin qu'il vous fournisse soit un nouveau compte soit les droits pour ajouter des machines.
+#### Étape 9 : installation de PBIS-Open
+Cette étape va connecter le serveur au domaine de la HEIG-VD pour permettre aux enseignants et assistants d'utiliser leur compte personnel. Pour réussir cela, le script `09.install_PBIS-Open` doit être lancé. Il va s'occuper d'installer et configurer l'application PBIS-Open. Pour mener à bien son éxécution, vous aurez besoin d'un compte ayant le droit d'ajouter une machine dans une unité organisationnelle de l'AD. Celui par défaut, qui a été utilisé pendant le développement, est tbaddvm. Cependant, il est possible que celui-ci soit désactivé et le script échouera. Pour résoudre cela, vous pouvez contacter le service informatique afin qu'il vous fournisse soit un nouveau compte soit les droits pour ajouter des machines.
 
 Il est fortement conseillé de redémarrer le serveur après l'installation. Néanmoins, cela n'est pas nécessaire pour faire fonctionner l'utilitaire.
 
-#### Étape 11 : installation de PBIS-Open dans le chroot
+#### Étape 10 : installation de PBIS-Open dans le chroot
 Maintenant, comme pour Veyon, PBIS-Open doit être installé sur les clients pour cela lancer la commande suivante :
 ```bash
-$ schroot -c focal -u root ./11.install_chroot_PBIS-Open.sh
+$ schroot -c focal -u root ./10.install_chroot_PBIS-Open.sh
 ```
 Ce script va installer et créer des scripts pour pouvoir ajouter et supprimer des clients du domaine. Pour plus d'explications sur leur utilité, veuilliez vous référer au rapport final. Pour cette partie, il faudra modifier certaines lignes du fichier si le compte de l'étape précédente n'était pas tbaddvm. Les endroits, dans lesquels une modifcation est a effectuée, sont marqué par le mot-clé `# *EDIT*`.
 
@@ -277,27 +267,27 @@ Puis, lancer une dernière commande qui permettra de mettre en place une authent
 schroot -c focal -u root cp ../../Templates_Secret/pam-files/* /etc/pam.d/
 ```
 
-#### Étape 12 : création de l'image cliente LTSP
+#### Étape 11 : création de l'image cliente LTSP
 
-De retour sur le serveur, lancez le script `12.image.sh`. Il génère l'image, le menu iPXE et le fichier initrd, et partage le chroot en NFS.
+De retour sur le serveur, lancez le script `11.image.sh`. Il génère l'image, le menu iPXE et le fichier initrd, et partage le chroot en NFS.
 
-#### Étape 13 : configuration de Zabbix Frontend & Server
+#### Étape 12 : configuration de Zabbix Frontend & Server
 
 Suivre la procédure `Annexe A - Importation configuration Zabbix.pdf` pour terminer l'installation de Zabbix sur le serveur. Une fois la configuration achevée, vous pouvez exécuter le script `veyon_zabbix.py` afin de surveiller les écrans des machines clientes. Une démonstration de son lancement est disponible dans l'annexe `Annexe B - Utilisation Script Python`.
 
-#### Étape 14 : installation et configuration de ElasticSearch
+#### Étape 13 : installation et configuration de ElasticSearch
 
-Pour installer la suite de logiciels afin de capturer le trafic réseau il faut lancer le script `13.install_elasticsearch.sh`. Il va télécharger et configurer Elasticsearch et Logstash. Une fois le tout mis en place, il sera possible d'utiliser le script python `capture_trafic.py`. Il permet d'automatiser le lancement d'une capture.
+Pour installer la suite de logiciels afin de capturer le trafic réseau il faut lancer le script `12.install_elasticsearch.sh`. Il va télécharger et configurer Elasticsearch et Logstash. Une fois le tout mis en place, il sera possible d'utiliser le script python `capture_trafic.py`. Il permet d'automatiser le lancement d'une capture.
 
 L'utilisation de ce script est démontrée dans l'annexe `Annexe B - Utilisation Script Python.pdf`.
 
-#### Étape 15 : installation et configuration de Grafana
+#### Étape 14 : installation et configuration de Grafana
 
-Dans un premier temps, lancer le script `14.install_grafana.sh`. Puis, suivez la procédure `Annexe C - Importation configuration Grafana.pdf` pour terminer l'installation de Grafana sur le serveur. Une fois la configuration terminée vous pouvez observer les différents alertes et journaux pour surveiller les tests.
+Dans un premier temps, lancer le script `13.install_grafana.sh`. Puis, suivez la procédure `Annexe C - Importation configuration Grafana.pdf` pour terminer l'installation de Grafana sur le serveur. Une fois la configuration terminée vous pouvez observer les différents alertes et journaux pour surveiller les tests.
 
-#### Étape 15 : mise en place du dossier tests
+#### Étape 16 : mise en place du dossier tests
 
-Pour terminer l'installation, lancer le dernier script se nommant `15.install_tests_script.sh`. Il s'occupera de créer et installer les scripts pour mettre en place le dossier `tests` des élèves.
+Pour terminer l'installation, lancer le dernier script se nommant `14.install_tests_script.sh`. Il s'occupera de créer et installer les scripts pour mettre en place le dossier `tests` des élèves.
 
 ```bash
 schroot -c focal -u root ./15.install_tests_script.sh
