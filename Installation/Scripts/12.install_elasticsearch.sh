@@ -1,18 +1,20 @@
 #!/bin/bash
 # Install and configure Logstash and Elasticsearch
 
+## Install the apt source for Logstash and Elasticsearch
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 sudo apt-get install apt-transport-https -y
 echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
 
-# Install elastic
+## Install elastic
 sudo apt-get update && sudo apt-get install elasticsearch -y
-# Install logsatsh
+## Install logsatsh
 sudo apt-get install logstash -y
-# Install tshark
+## Install tshark
 sudo apt-get install tshark -y
 
-# The configurations of Logstash are stored in the /etc/logsatsh/conf.d folder
+## The configurations of Logstash are stored in the /etc/logsatsh/conf.d folder
+## Creation of a configuration for tshark
 sudo tee /etc/logstash/conf.d/tshark.conf > /dev/null << 'EOF'
 input {
   tcp {
@@ -50,6 +52,7 @@ output {
 
 EOF
 
+## Install psutil to be able to use it for the script
 sudo pip install psutil
 
 sudo tee /usr/local/bin/capture_trafic.py > /dev/null << 'EOF'

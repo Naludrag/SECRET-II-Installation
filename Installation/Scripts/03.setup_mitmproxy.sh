@@ -8,7 +8,7 @@ sudo cp ~/.mitmproxy/mitmproxy-ca-cert.pem /srv/ltsp/focal/usr/local/share/ca-ce
 ## Install mitmproxy certificate
 sudo update-ca-certificates
 
-# Create script to ask and run mitmproxy with config file
+## Create script to ask and run mitmproxy with config file
 sudo tee /usr/local/bin/mitmproxy_configfile_start.py > /dev/null << EOF
 """
 Script to start mitmproxy with the right configuration

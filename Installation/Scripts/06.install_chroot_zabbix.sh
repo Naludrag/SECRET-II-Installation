@@ -27,7 +27,3 @@ UserParameter=dconf.proxy.cksum,dconf dump /system/proxy/ | sha256sum
 UserParameter=vm.status,grep -q ^flags.*\ hypervisor /proc/cpuinfo && echo "This machine is a VM"
 EOF
 
-# Zabbix monitoring : logkeys
-touch /var/log/logkeys.log
-chown root:zabbix /var/log/logkeys.log
-chmod o-r /var/log/logkeys.log

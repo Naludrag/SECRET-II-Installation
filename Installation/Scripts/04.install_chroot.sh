@@ -78,7 +78,7 @@ cat > /etc/sudoers.d/ltsp_roles << 'EOF'
 %professor	  ALL=(ALL:ALL) ALL
 EOF
 
-# Creation of the service that will start syslog in Ubuntu 20.04
+# Creation of the service that will start syslog because if not will not be enabled
 sudo tee /usr/local/bin/start-syslog.sh > /dev/null << 'EOF'
 #!/bin/bash
 sudo systemctl unmask rsyslog
@@ -89,7 +89,7 @@ EOF
 # To make the script executable
 sudo chmod +x /usr/local/bin/start-syslog.sh
 
-# Create the service
+# Create a service to run it
 sudo tee /etc/systemd/system/startsyslog.service > /dev/null << 'EOF'
 [Unit]
 Description=Start syslog

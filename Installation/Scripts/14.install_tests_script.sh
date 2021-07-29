@@ -1,6 +1,7 @@
 #!/bin/bash
 # Installation of tests script for user
 
+## Creation of script that will set the rights correctly for the tests folder
 sudo tee /usr/local/bin/rights-test.sh > /dev/null << 'EOF'
 #!/bin/bash
 sudo chgrp www-data $1
@@ -8,8 +9,10 @@ sudo chmod 770 $1
 sudo setfacl -R -m g:profs:rwx $1
 EOF
 
+## Add execution rights to execute the script
 sudo chmod +x /usr/local/bin/rights-test.sh
 
+## Creation of script that will create the tests folder
 sudo tee /etc/profile.d/create-test.sh > /dev/null << 'EOF'
 #!/bin/bash
 if [[ $EUID -ne 0 ]]; then # Execute only when a user other than root logs in
@@ -21,9 +24,10 @@ if [[ $EUID -ne 0 ]]; then # Execute only when a user other than root logs in
 fi
 EOF
 
+## Add execution rights to execute the script
 sudo chmod +x /etc/profile.d/create-test.sh
 
-
+## Modify the sudoers to be able to run rights-test.sh with sudo rights
 sudo tee /etc/sudoers > /dev/null << 'EOF'
 # This file MUST be edited with the 'visudo' command as root.
 #

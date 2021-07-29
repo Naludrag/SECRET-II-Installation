@@ -14,8 +14,8 @@ sudo apt install --install-recommends ltsp ltsp-binaries dnsmasq nfs-kernel-serv
 sudo apt install debootstrap schroot pwgen -y
 
 # *EDIT*
-# Configure clients' side network interface.
-# Replace interface name (eno1) and gateway4 with wanted values
+# Configure clients side network interface.
+# Replace interface name (ens34) and gateway4 with wanted values
 sudo tee /etc/netplan/02_config_ltsp.yaml > /dev/null << 'EOF'
 network:
   version: 2
@@ -29,7 +29,7 @@ network:
         addresses: [192.168.67.1]
 EOF
 # *EDIT*
-# Replace interface name (eno2) with wanted value
+# Replace interface name (ens33) with wanted value
 sudo tee /etc/netplan/03_config_lan.yaml > /dev/null << 'EOF'
 network:
   version: 2
@@ -44,7 +44,7 @@ sudo netplan apply
 sudo ltsp dnsmasq --proxy-dhcp=0
 
 # *EDIT*
-# Apply iptables rules. Replace `-o interface` (ens38) in the first rule with wanted interface (the one facing ltsp clients)
+# Apply iptables rules. Replace `-o interface` (ens34) in the second rule with wanted interface (the one facing ltsp clients)
 sudo iptables -A OUTPUT -p tcp -d 127.0.0.1 -j ACCEPT
 sudo iptables -A OUTPUT -s 192.168.67.1 -o ens34 -j ACCEPT
 sudo iptables -A OUTPUT -d 192.168.67.1 -j ACCEPT
@@ -113,7 +113,7 @@ sudo groupadd student
 sudo useradd --create-home --shell /bin/bash --groups professor ltsp_monitoring
 
 
-# Grant professors sudo permissions. Grant permission for local professor and LDAP too
+# Grant professors sudo permissions. Grant permission for local professor
 sudo tee /etc/sudoers.d/ltsp_roles > /dev/null << 'EOF'
 %professor   ALL=(ALL:ALL) ALL
 EOF

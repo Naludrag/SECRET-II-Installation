@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install and configure PBIS-Open on the client
 
-# To communicate with the DNS server of the school and make LDAP connections
+# Change resolved.conf to be able communicate with the DNS server of the school and make LDAP connections
 sudo tee /etc/systemd/resolved.conf > /dev/null << 'EOF'
 #  This file is part of systemd.
 #
@@ -29,14 +29,16 @@ DNS=10.192.22.5
 #ReadEtcHosts=yes
 EOF
 
-#Install PBIS Open
+#Install PBIS-Open
 wget -O - http://repo.pbis.beyondtrust.com/yum/RPM-GPG-KEY-pbis | sudo apt-key add -
 sudo wget -O /etc/apt/sources.list.d/pbiso.list http://repo.pbis.beyondtrust.com/apt/pbiso.list
-## Install pbis-open
+## Install PBIS-Open
 sudo apt-get update && sudo apt-get install pbis-open -y
 ## Remove avahi-daemon because it has problems with PBIS
 sudo apt-get remove avahi-daemon -y
 sudo apt autoremove -y
+
+## Professors from the AD can run sudo commands
 sudo tee /etc/sudoers.d/ltsp_roles > /dev/null << 'EOF'
 %professor   ALL=(ALL:ALL) ALL
 %profs       ALL=(ALL:ALL) ALL
@@ -65,6 +67,7 @@ sudo /opt/pbis/bin/config SkeletonDirs "/etc/skelStudents"
 sudo /opt/pbis/bin/domainjoin-cli join --ou TB-STUD einet.ad.eivd.ch tbaddvm
 EOF
 
+## Creation of script to delete machines in the AD
 tee /etc/ldap/leave.sh > /dev/null << 'EOF'
 #!/usr/bin/expect -f
 log_user 0

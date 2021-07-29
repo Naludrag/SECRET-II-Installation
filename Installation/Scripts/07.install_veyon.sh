@@ -1,5 +1,5 @@
 #!/bin/bash
-# # Install and configure Veyon on the server
+# Install and configure Veyon on the server
 
 ## Adding repository to add veyon installer
 sudo add-apt-repository ppa:veyon/stable -y
@@ -12,15 +12,17 @@ sudo veyon-cli config set Authentication/Method 0
 ## Adding Location for computers
 sudo veyon-cli networkobjects add location Secret
 
-## Uncomment the follwoing lines to use authentication with keys
+## Uncomment the following lines to use authentication with keys
+## sudo veyon-cli config set Authentication/Method 1
 ## Creating keys for client
 ## sudo veyon-cli authkeys create Teacher
 ## Change group so that only professors can see the private key and open veyon master
 ## sudo chgrp professor /etc/veyon/keys/private/Teacher/
 ## sudo veyon-cli authkeys export Teacher/public /tmp/Teacherexport
-## Import publi key in the client
+## Import public key in the client
 ## schroot -c focal -u root cp /tmp/Teacherexport .
 
+## Install python library to run be able to run the script
 sudo pip install py-zabbix
 
 ## Create Python script to discover available clients for Veyon

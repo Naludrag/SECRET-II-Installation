@@ -10,6 +10,12 @@ sudo apt install veyon -y
 ## Change authentication method
 sudo veyon-cli config set Authentication/Method 0
 
+## Uncomment the following lines to use authentication with keys
+## sudo veyon-cli config set Authentication/Method 1
+## Import the key
+## sudo veyon-cli authkeys import Teacher/public ./Teacherexport
+## sudo rm -rf ./Teacherexport
+
 # Set access to have only profs accessing the clients
 sudo veyon-cli config set AccessControl/DomainGroupsEnabled true
 sudo veyon-cli config set AccessControl/AccessRestrictedToUserGroups true
@@ -25,10 +31,4 @@ Exec=sh -c "veyon-server"
 X-GNOME-Autostart-enabled=true
 Comment=To be able to see students screens
 EOF
-
-## Uncomment the following lines to use authentication with keys
-## Import the key
-#sudo veyon-cli authkeys import Teacher/public ./Teacherexport
-
-#sudo rm -rf ./Teacherexport
 
